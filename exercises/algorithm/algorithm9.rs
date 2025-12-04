@@ -2,11 +2,11 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
-
+use std::cmp::Ordering;
 pub struct Heap<T>
 where
     T: Default,
@@ -23,7 +23,7 @@ where
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
             count: 0,
-            items: vec![T::default()],
+            items: vec![],
             comparator,
         }
     }
@@ -37,7 +37,16 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1 ;
+        self.items.push(value);
+        self.items.sort_by(|a ,b| {
+            if (self.comparator)(a,b){
+                Ordering::Less
+            }
+            else{
+                Ordering::Greater
+            }
+        });
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +66,20 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        if self.children_present(idx){
+            return usize::MAX ;
+        }
+        let lchild = self.left_child_idx(idx) ;
+        let rchild = self.right_child_idx(idx) ;
+        if rchild > self.count {
+            return lchild ;
+        }
+        if (self.comparator)(&self.items[lchild],&self.items[rchild]){
+            return lchild;
+        }else{
+            return rchild;
+        }
+        
     }
 }
 
@@ -79,13 +100,35 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
-{
+    T: Default + std::clone::Clone + std::fmt::Display,{
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+
+        if self.is_empty(){
+            return None
+        }
+        else{
+            for c in &self.items{
+                print!{"{} ",c};
+            }
+            println!("");
+            if let Some(t) = self.items.first().cloned(){
+                self.count -= 1 ;
+                self.items[0] = self.items[self.count].clone();
+                self.items.truncate(self.count);
+                self.items.sort_by(|a,b|{
+                    if (self.comparator)(a,b){
+                        Ordering::Less
+                    }else{
+                        Ordering::Greater
+                    }
+                });
+                return Some(t);
+            }else{
+                return None;
+            }           
+        }
     }
 }
 

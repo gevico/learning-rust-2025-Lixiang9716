@@ -3,7 +3,6 @@
 // Execute `rustlings hint errors4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 #[derive(PartialEq, Debug)]
 struct PositiveNonzeroInteger(u64);
@@ -13,10 +12,21 @@ enum CreationError {
     Negative,
     Zero,
 }
-
+use std::fmt;
+impl fmt::Display for CreationError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "invalid first item to double")
+    }
+}
 impl PositiveNonzeroInteger {
     fn new(value: i64) -> Result<PositiveNonzeroInteger, CreationError> {
         // Hmm...? Why is this only returning an Ok value?
+        if value == 0{
+            return Err(CreationError::Zero);
+        }
+        if value < 0 {
+            return Err(CreationError::Negative);
+        }
         Ok(PositiveNonzeroInteger(value as u64))
     }
 }

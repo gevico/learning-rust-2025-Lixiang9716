@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,14 +69,40 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self	
+    where T: std::cmp::PartialOrd + Clone
+    {
+		let mut res = LinkedList::<T>::new();
+        let mut node_a = list_a.start;
+        let mut node_b = list_b.start;
+        while node_a.is_some() && node_b.is_some(){
+            unsafe{
+                let va = &(*node_a.unwrap().as_ptr()).val;
+                let vb = &(*node_b.unwrap().as_ptr()).val;
+                if va < vb {
+                    res.add(va.clone()) ;
+                    node_a = (*node_a.unwrap().as_ptr()).next;
+                }else{
+                    res.add(vb.clone()) ; 
+                    node_b = (*node_b.unwrap().as_ptr()).next ;
+                }
+            }
         }
+        while node_a.is_some(){
+            unsafe{
+                let va = &(*node_a.unwrap().as_ptr()).val;
+                res.add(va.clone()) ;
+                node_a = (*node_a.unwrap().as_ptr()).next;
+            }
+        }
+        while node_b.is_some(){
+            unsafe{
+                let vb = &(*node_b.unwrap().as_ptr()).val;
+                res.add(vb.clone()) ;
+                node_b = (*node_b.unwrap().as_ptr()).next;
+            }
+        }
+        return res ;
 	}
 }
 
